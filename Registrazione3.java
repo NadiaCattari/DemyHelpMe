@@ -167,24 +167,34 @@ public class Registrazione3 extends AppCompatActivity{
                                    input.read(audioData,0,audioData.length);
                                 }
 
-                                Intent intent = new Intent(Intent.ACTION_SEND);
+                                /*Intent intent = new Intent(Intent.ACTION_SEND);
                                 intent.setType("audio/*");
                                 intent.setPackage("com.android.bluetooth");
                                 intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(String.valueOf(audioData))));
-                                startActivity(Intent.createChooser(intent,"Invia il file audio"));
+                                startActivity(Intent.createChooser(intent,"Invia il file audio"));*/
 
-                                short[] audioShort = new short[audioData.length / 2];
+                                /*short[] audioShort = new short[audioData.length / 2];
                                 ByteBuffer.wrap(audioData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(audioShort);
-                                int lunghezzaShort = audioShort.length;
+                                int lunghezzaShort = audioShort.length;*/
 
-                                Log.i("lunghezza short","" + lunghezzaShort);
-                                Log.i("lunghezza byte","" + audioData.length);
+                                int size = audioData.length;
+                                short[] audioShort = new short[size];
+
+                                for (int index = 0; index < size; index++)
+                                    audioShort[index] = (short) audioData[index];
+
+                                //Log.i("lunghezza short","" + lunghezzaShort);
+                                //Log.i("lunghezza byte","" + audioData.length);
 
                                 short[] tempRumore;// = new short[(lunghezzaShort*5)/25];
                                 short[] tempSegnale;// = new short[(lunghezzaShort*20)/25];
 
-                                tempRumore = Arrays.copyOfRange(audioShort,0,(lunghezzaShort*5)/25 + 1);
-                                tempSegnale = Arrays.copyOfRange(audioShort,(lunghezzaShort*5)/25 + 1,audioShort.length);
+                                tempRumore = Arrays.copyOfRange(audioShort,0,(size*5)/25 + 1);
+                                tempSegnale = Arrays.copyOfRange(audioShort,(size*5)/25 + 1,audioShort.length);
+
+                                Log.i("Lunghezza buffer",String.valueOf(size));
+                                Log.i("Lunghezza rumore",String.valueOf(tempRumore.length));
+                                Log.i("Lunghezza segnale",String.valueOf(tempSegnale.length));
 
                                 double potenzaRumore = calcoloPotenzaDB(tempRumore,tempRumore.length);
                                 double potenzaSegRum = calcoloPotenzaDB(tempSegnale,tempSegnale.length);
@@ -218,7 +228,7 @@ public class Registrazione3 extends AppCompatActivity{
 
 
 
-                            TableRecord newRecord = new TableRecord(id_utente, vocale, data, String.valueOf(fileAudio.getAbsolutePath()));
+                            TableRecord newRecord = new TableRecord(id_utente, vocale, data, fileAudio.getAbsolutePath());
                             switch (posizione) {
                                 case "Fermo_e_seduto":
                                     db.addFermoSeduto(newRecord);
